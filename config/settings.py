@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import timedelta
 import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,7 +47,6 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
-REST_USE_JWT = True
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
@@ -84,10 +84,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db("DATABASE_URL")
 }
 
 
@@ -126,3 +123,32 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+SOCIALACCOUNT_ADAPTER = 'apps.users.adapters.MySocialAccountAdapter'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_RETURN_EXPIRATION': True,
+    'REGISTER_SERIALIZER': 'apps.users.serializers.CustomRegisterSerializer',
+}
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": env.str("GOOGLE_CLIENT_ID"),
+            "secret": env.str("GOOGLE_SECRET"),
+            "key": "",
+        }
+    }
+}
