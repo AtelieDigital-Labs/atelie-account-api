@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -37,8 +38,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=150)
     username = models.CharField(unique=True, max_length=50)
     email = models.EmailField(unique=True, max_length=255)
-    cpf = models.CharField(unique=True, max_length=11)
-    phone_number = models.CharField(max_length=15)
+    cpf = models.CharField(max_length=11, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='images', null=True)
     bio = models.TextField(null=True)
@@ -59,3 +60,24 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = "users"
+        constraints = [
+        models.UniqueConstraint(
+            fields=["cpf"],
+            condition=~Q(cpf=None),
+            name="unique_cpf_not_null"
+        )
+    ]
+
+class UserAddress(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name="addresses", on_delete=models.CASCADE
+    )
+    complement = models.TextField(blank=True, null=True)
+    number = models.IntegerField()
+    street = models.CharField(max_length=255)
+    neighborhood = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=2)
+    zip_code = models.CharField(max_length=8)
+    is_main = models.BooleanField(default=False)
+    
