@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 env = environ.Env(
@@ -13,11 +13,6 @@ env = environ.Env(
 environ.Env.read_env(BASE_DIR / '.env')
 
 SECRET_KEY = env.str('SECRET_KEY')
-
-DEBUG = env.bool('DEBUG')
-
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
-
 
 # Application definition
 
@@ -31,7 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     # my apps
     'apps.users',
-    
+    'apps.wallets',
+
     # other apps
     "rest_framework",
     'rest_framework.authtoken', # Necessário para tokens básicos
@@ -42,11 +38,12 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    
+
     'drf_yasg',
 ]
 
 SITE_ID = 1
+
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
@@ -65,7 +62,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,15 +75,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-DATABASES = {
-    'default': env.db("DATABASE_URL")
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -124,7 +112,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
+
 SOCIALACCOUNT_ADAPTER = 'apps.users.adapters.MySocialAccountAdapter'
+ACCOUNT_ADAPTER = 'apps.users.adapters.CeleryAdapter'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -151,4 +142,16 @@ SOCIALACCOUNT_PROVIDERS = {
             "key": "",
         }
     }
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'USE_SESSION_AUTH': False, # Opcional: desativa o login por sessão do Django no Swagger
+    'JSON_EDITOR': True,
 }
