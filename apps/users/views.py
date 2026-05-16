@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework import permissions, status, viewsets
+from rest_framework.views import APIView
 from . import serializers
 from . import models
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
@@ -23,25 +24,29 @@ class AddressView(viewsets.ModelViewSet):
     serializer_class = serializers.AddressSerializer
 
     def get_queryset(self):
-        # Garante que o usuário só veja os endereços vinculados ao ID dele no Token
-        user = self.request.user
-        return models.UserAddress.objects.filter(user=user)
+        if getattr(self, "swagger_fake_view", False):
+            return models.UserAddress.objects.none()
+
+        if not self.request.user.is_authenticated:
+            return models.UserAddress.objects.none()
+
+        return models.UserAddress.objects.filter(user=self.request.user)
     
     def perform_create(self, serializer):
         # Garante que ao criar, o endereço seja vinculado ao usuário logado
         serializer.save(user=self.request.user)
 
-class BecomeArtisanView(UpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.BecomeArtisanSerializer
 
-    def patch(self, request, *args, **kwargs):
+class ActivateArtisanView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
         user = request.user
+
+        if user.is_artisan:
+            return Response({"message": "Usuário já é artisan"})
+
         user.is_artisan = True
-        user.save() 
-        
-        return Response(
-            {"message": "Agora você é um artesão!"}, 
-            status=status.HTTP_200_OK
-        )
-    
+        user.save()
+
+        return Response({"message": "Usuário ativado como artisan"})

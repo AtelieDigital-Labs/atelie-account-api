@@ -7,5 +7,5 @@ router.register(r'addresses', views.AddressView, basename='addresses')
 
 urlpatterns = [
     path(r'me/', views.UserView.as_view(), name='me'),
-    path(r'become-artisan/', views.BecomeArtisanView.as_view(), name='become-artisan')
+    path(r'artisan/active', views.ActivateArtisanView.as_view(), name='become-artisan')
 ] + router.urls
