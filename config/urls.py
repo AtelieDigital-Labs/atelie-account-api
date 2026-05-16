@@ -7,9 +7,9 @@ from apps.users.views import GoogleLogin
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="Snippets API",
+      title="Atelie: Accounts",
       default_version='v1',
-      description="Test description",
+      description="Endpoints do micro serviço de Accounts",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="contact@snippets.local"),
       license=openapi.License(name="BSD License"),
@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
     path('api/accounts/', include('apps.users.urls')),
+    path('api/accounts/', include('apps.wallets.urls')),
     path('accounts/', include('allauth.urls')),
     # path("api/", api.urls),
     path('api/docs<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
