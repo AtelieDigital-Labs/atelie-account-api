@@ -113,9 +113,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
+RABBITMQ_HOST = '127.0.0.1'
 
 SOCIALACCOUNT_ADAPTER = 'apps.users.adapters.MySocialAccountAdapter'
 ACCOUNT_ADAPTER = 'apps.users.adapters.CeleryAdapter'
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),

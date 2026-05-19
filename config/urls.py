@@ -24,7 +24,6 @@ urlpatterns = [
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
     path('api/accounts/', include('apps.users.urls')),
-    path('api/accounts/', include('apps.wallets.urls')),
     path('accounts/', include('allauth.urls')),
     # path("api/", api.urls),
     path('api/docs<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
