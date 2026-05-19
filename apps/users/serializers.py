@@ -1,3 +1,5 @@
+import queue
+
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from . import models
@@ -90,12 +92,22 @@ class CustomRegisterSerializer(RegisterSerializer):
         required=True,
         validators=[UniqueValidator(queryset=models.User.objects.all(), message="Este e-mail já está em uso.")]
     )
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
+    first_name = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        allow_null=False,
+    )
+
+    last_name = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        allow_null=False,
+    )
     phone_number = serializers.CharField(required=False, allow_blank=True)
     cpf = serializers.CharField(
         required=False, 
         allow_blank=True, 
+        allow_null=True,
         validators=[UniqueValidator(queryset=models.User.objects.all(), message="Este CPF já está em uso.")]
     )
     date_of_birth = serializers.DateField(required=False)
