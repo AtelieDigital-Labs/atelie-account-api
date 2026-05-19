@@ -13,7 +13,8 @@ def callback_store_created(data):
 
     # get_or_create garante a idempotência: se já existir, ele não duplica e não quebra
     wallet, created = Wallet.objects.get_or_create(
-        user=user
+        user=user,
+        defaults=data['pix_key']
     )
 
     if created:
