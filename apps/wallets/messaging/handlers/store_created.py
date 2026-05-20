@@ -11,10 +11,10 @@ def callback_store_created(data):
         print(f"[WARNING] Usuário {data.get('artisan_id')} não encontrado. Pulando criação de carteira.")
         return  # Aqui ele sai graciosamente, o consumer dá ACK e a mensagem some da fila
 
-    # get_or_create garante a idempotência: se já existir, ele não duplica e não quebra
+
     wallet, created = Wallet.objects.get_or_create(
         user=user,
-        defaults=data['pix_key']
+        defaults={"pix_key": data['pix_key']}  
     )
 
     if created:

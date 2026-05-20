@@ -113,7 +113,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
-RABBITMQ_HOST = '127.0.0.1'
+RABBITMQ_HOST = 'rabbitmq'
 
 SOCIALACCOUNT_ADAPTER = 'apps.users.adapters.MySocialAccountAdapter'
 ACCOUNT_ADAPTER = 'apps.users.adapters.CeleryAdapter'
