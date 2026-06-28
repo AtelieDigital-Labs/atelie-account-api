@@ -1,6 +1,9 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.account.adapter import DefaultAccountAdapter
-from .tasks import send_celery_mail
+from infra.messaging.publishers.user_created import publish_user_created
+from infra.messaging.events.user_created import UserCreatedEvent
+from asgiref.sync import async_to_sync
+
 
 class MySocialAccountAdapter(DefaultSocialAccountAdapter):
     def populate_user(self, request, sociallogin, data):
@@ -13,30 +16,31 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # Foto de perfil
         picture = data.get("picture")
         if picture:
-            user.profile_image_url = picture 
+            user.profile_image_url = picture
 
         return user
 
-class CeleryAdapter(DefaultAccountAdapter):
 
+class AccountAdapter(DefaultAccountAdapter):
     def send_mail(self, template_prefix, email, context):
+        print("SEND_MAIL CHAMADO")
+        user = context.get("user")
 
-        safe_context = {}
-
-        for key, value in context.items():
-
-            if key == "user":
-                safe_context["user_name"] = value.first_name
-
-            elif isinstance(value, (str, int, float, bool, list, dict)):
-                safe_context[key] = value
-
-            else:
-                safe_context[key] = str(value)
-
-        send_celery_mail.delay(
-            template_prefix,
-            email,
-            safe_context
+        event = UserCreatedEvent(
+            user_id=user.id,
+            first_name=user.first_name,
+            email=email,
+            confirmation_key=context.get("key"),
+            confirmation_url=context.get("activate_url"),
+            template_prefix=template_prefix,
         )
-    
+
+        async_to_sync(publish_user_created)(event)
+
+    # async def _publish(self, event):
+    #     async with broker:
+    #         await broker.publish(
+    #             message=asdict(event),
+    #             exchange=exchange_accounts,
+    #             routing_key=RoutingKey.USER_CREATED_ROUTING_KEY
+    #         )

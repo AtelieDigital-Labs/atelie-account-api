@@ -4,21 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0003_alter_user_cpf_alter_user_phone_number_and_more'),
+        ("users", "0003_alter_user_cpf_alter_user_phone_number_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='user',
-            old_name='name',
-            new_name='first_name',
+            model_name="user",
+            old_name="name",
+            new_name="first_name",
         ),
         migrations.AddField(
-            model_name='user',
-            name='last_name',
-            field=models.CharField(default='', max_length=150),
+            model_name="user",
+            name="last_name",
+            field=models.CharField(default="", max_length=150),
             preserve_default=False,
         ),
     ]
