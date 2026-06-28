@@ -11,6 +11,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "bio",
+            "email"
             # "profile_image",
         ]
 
