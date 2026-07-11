@@ -1,6 +1,6 @@
 from django.db import transaction
 from .models import Wallet, WalletTransaction
-
+from decimal import Decimal
 
 class WalletService:
     def __init__(self, user_service) -> None:
@@ -11,7 +11,7 @@ class WalletService:
         order_id = data["order_id"]
         wallet = Wallet.objects.select_for_update().get(user=data["artisan_id"])
         amount = data["total_amount"]
-        wallet.balance += amount
+        wallet.balance += Decimal(amount)
         wallet.save()
 
         WalletTransaction.objects.create(
