@@ -131,7 +131,7 @@ SIMPLE_JWT = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "apps.authentication.authentication.CookieJWTAuthentication",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
@@ -146,7 +146,14 @@ SPECTACULAR_SETTINGS = {
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_RETURN_EXPIRATION": True,
-    "JWT_AUTH_HTTPONLY": False,
+    "JWT_AUTH_HTTPONLY": True,
+
+    "JWT_AUTH_COOKIE": "access",
+    "JWT_AUTH_REFRESH_COOKIE": "refresh",
+    "JWT_AUTH_COOKIE_USE_CSRF": True,
+    "JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED": False,
+    "JWT_AUTH_SECURE": False,  # True em produção com HTTPS
+    "JWT_AUTH_SAMESITE": "Lax",
 }
 
 SOCIALACCOUNT_PROVIDERS = {
