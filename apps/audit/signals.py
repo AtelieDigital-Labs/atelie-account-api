@@ -1,3 +1,4 @@
+from apps.wallets.models import WalletTransaction
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
@@ -7,7 +8,7 @@ from apps.wallets.models import Wallet
 from .models import LogOutbox
 from .services import create_outbox_entry
 
-_MONITORED_MODELS = (User, Wallet)
+_MONITORED_MODELS = (User, Wallet, WalletTransaction)
 
 
 def _serialize_value(value) -> str:
@@ -19,6 +20,7 @@ def _serialize_value(value) -> str:
 
 @receiver(pre_save, sender=User)
 @receiver(pre_save, sender=Wallet)
+@receiver(pre_save, sender=WalletTransaction)
 def audit_pre_save(sender, instance, **kwargs):
 
     # Guard: não auditar o próprio LogOutbox
@@ -68,6 +70,7 @@ def audit_pre_save(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 @receiver(post_save, sender=Wallet)
+@receiver(post_save, sender=WalletTransaction)
 def audit_post_save(sender, instance, created, **kwargs):
 
     # Guard: não auditar o próprio LogOutbox (evita loop recursivo)
