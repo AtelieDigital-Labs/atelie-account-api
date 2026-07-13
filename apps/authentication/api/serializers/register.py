@@ -79,24 +79,3 @@ class CustomRegisterSerializer(RegisterSerializer):
             }
         )
         return data
-
-    def save(self, request):
-        user = super().save(request)
-
-        user.first_name = self.validated_data.get("first_name")
-        user.last_name = self.validated_data.get("last_name")
-        user.phone_number = self.validated_data.get("phone_number")
-        user.cpf = self.validated_data.get("cpf")
-        user.date_of_birth = self.validated_data.get("date_of_birth")
-
-        user.save(
-            update_fields=[
-                "first_name",
-                "last_name",
-                "phone_number",
-                "cpf",
-                "date_of_birth",
-            ]
-        )
-
-        return user

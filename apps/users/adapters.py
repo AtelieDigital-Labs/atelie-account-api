@@ -22,6 +22,20 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
 
 
 class AccountAdapter(DefaultAccountAdapter):
+    def save_user(self, request, user, form, commit=True):
+        user = super().save_user(request, user, form, commit=commit)
+        
+        cleaned_data = getattr(form, "cleaned_data", {})
+        user.first_name = cleaned_data.get("first_name", user.first_name)
+        user.last_name = cleaned_data.get("last_name", user.last_name)
+        user.phone_number = cleaned_data.get("phone_number", user.phone_number)
+        user.cpf = cleaned_data.get("cpf", user.cpf)
+        user.date_of_birth = cleaned_data.get("date_of_birth", user.date_of_birth)
+        
+        if commit:
+            user.save()
+        return user
+        
     def send_mail(self, template_prefix, email, context):
         print("SEND_MAIL CHAMADO")
         user = context.get("user")
