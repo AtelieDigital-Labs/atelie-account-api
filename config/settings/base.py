@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "apps.users",
     "apps.authentication",
     "apps.wallets",
+    "apps.audit",
     # other apps
     "rest_framework",
     "rest_framework.authtoken",  # Necessário para tokens básicos
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "drf_spectacular",
+    
 ]
 
 SITE_ID = 1
@@ -50,6 +52,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.audit.middleware.AuditContextMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",

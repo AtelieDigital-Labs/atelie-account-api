@@ -5,6 +5,7 @@ class Exchange(StrEnum):
     ACCOUNTS_EXCHANGE = "accounts.events"
     ORDER_EXCHANGE = "orders.events"
     CATALOG_EXCHANGE = "catalogs.events"
+    LOG_EXCHANGE = "logs.events"
 
 
 class Queue(StrEnum):
@@ -18,3 +19,4 @@ class RoutingKey(StrEnum):
     USER_CREATED_ROUTING_KEY = "accounts.user.created"
     ORDER_PAID_ROUTING_KEY = "orders.order.paid"
     STORE_CREATED_ROUTING_KEY = "catalogs.store.created"
+    LOG_REGISTER_ROUTING_KEY = "logs.register"
