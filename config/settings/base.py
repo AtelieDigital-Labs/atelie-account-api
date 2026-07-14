@@ -165,7 +165,7 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
+GOOGLE_CALLBACK_URL = env("GOOGLE_CALLBACK_URL")
 # MinIO 
 # Configuração de Storages para o Django 4.2+
 STORAGES = {
@@ -175,7 +175,7 @@ STORAGES = {
             "access_key": "atelie",
             "secret_key": "atelie123",
             "bucket_name": "accounts",
-            "endpoint_url": "http://localhost:9000",
+            "endpoint_url": "http://minio:9000",
 
             "querystring_auth": True,
             "file_overwrite": False,

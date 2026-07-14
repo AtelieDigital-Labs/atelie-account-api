@@ -6,7 +6,7 @@ from ...services import get_user_service
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 @extend_schema(
     tags=["Profile"],
@@ -15,6 +15,7 @@ from rest_framework import status
 )
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     service = get_user_service()
 
     def get(self, request):

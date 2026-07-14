@@ -16,6 +16,7 @@ dependencies = [
     "drf-spectacular>=0.29.0",
     "drf-yasg>=1.21.15",
     "faststream[cli,rabbit]>=0.7.1",
+    "google-auth>=2.56.0",
     "httpx>=0.28.1",
     "pillow>=12.1.0",
     "psycopg[binary]>=3.3.4",
