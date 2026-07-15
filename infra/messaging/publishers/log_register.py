@@ -4,6 +4,8 @@ from ..constants import RoutingKey
 
 
 async def publisher_log_register(message: dict):
+    await broker.start()
+    await broker.connect()
     await broker.publish(
         exchange=exchange_logs,
         routing_key=RoutingKey.LOG_REGISTER_ROUTING_KEY,
