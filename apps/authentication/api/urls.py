@@ -13,7 +13,7 @@ from .views.password import (
 from django.urls import path
 
 urlpatterns = [
-    path("resgister/", CustomRegisterView.as_view(), name="rest_register"),
+    path("register/", CustomRegisterView.as_view(), name="rest_register"),
     path("verify-email/", CustomVerifyEmailView.as_view(), name="rest_verify_email"),
     path(
         "resend-email/",

@@ -11,8 +11,12 @@ class ProfileSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "bio",
-            "email"
-            # "profile_image",
+            "email",
+            "profile_image",
+            'is_artisan',
+            'phone_number',
+            'cpf',
+            'date_of_birth'
         ]
 
     def validate(self, attrs):

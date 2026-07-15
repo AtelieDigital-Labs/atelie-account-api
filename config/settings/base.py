@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "drf_spectacular",
-    
+    "storages"
 ]
 
 SITE_ID = 1
@@ -131,7 +131,7 @@ SIMPLE_JWT = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "apps.authentication.authentication.CookieJWTAuthentication",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
@@ -146,7 +146,14 @@ SPECTACULAR_SETTINGS = {
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_RETURN_EXPIRATION": True,
-    "JWT_AUTH_HTTPONLY": False,
+    "JWT_AUTH_HTTPONLY": True,
+
+    "JWT_AUTH_COOKIE": "access",
+    "JWT_AUTH_REFRESH_COOKIE": "refresh",
+    "JWT_AUTH_COOKIE_USE_CSRF": True,
+    "JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED": False,
+    "JWT_AUTH_SECURE": False,  # True em produção com HTTPS
+    "JWT_AUTH_SAMESITE": "Lax",
 }
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -158,3 +165,29 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+GOOGLE_CALLBACK_URL = env("GOOGLE_CALLBACK_URL")
+# MinIO 
+# Configuração de Storages para o Django 4.2+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": "atelie",
+            "secret_key": "atelie123",
+            "bucket_name": "accounts",
+            "endpoint_url": "http://minio:9000",
+
+            "querystring_auth": True,
+            "file_overwrite": False,
+            "addressing_style": "path",
+            "signature_version": "s3v4",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+# Como removemos o custom_domain, você precisa ditar explicitamente o caminho público.
+# O Django usará este endereço HTTP (sem SSL/HTTPS) para gerar os links que o seu React vai ler!
+MEDIA_URL = "http://localhost:9000/accounts/"

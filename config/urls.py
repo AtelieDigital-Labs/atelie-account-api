@@ -12,7 +12,7 @@ urlpatterns = [
     path("api/v1/accounts/addresses/", include("apps.addresses.api.urls")),
     path("api/v1/accounts/", include("apps.users.api.urls")),
     path("api/v1/accounts/", include("apps.authentication.api.urls")),
-    path("api/v1/accounts/wallets/", include("apps.wallets.api.urls")),
+    path("api/v1/accounts/", include("apps.wallets.api.urls")),
     path("accounts/", include("allauth.urls")),
     # Optional UI:
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
