@@ -1,10 +1,12 @@
 from django.db import models
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+
 
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
@@ -33,14 +35,16 @@ class UserManager(BaseUserManager):
 
         return self.create_user(username, email, password, **extra_fields)
 
+
 class User(AbstractBaseUser, PermissionsMixin):
-    name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
     username = models.CharField(unique=True, max_length=50)
     email = models.EmailField(unique=True, max_length=255)
-    cpf = models.CharField(unique=True, max_length=11)
-    phone_number = models.CharField(max_length=15)
+    cpf = models.CharField(max_length=11, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    profile_image = models.ImageField(upload_to='images', null=True)
+    profile_image = models.ImageField(upload_to="images", null=True)
     bio = models.TextField(null=True)
     is_artisan = models.BooleanField(default=False)
 
@@ -59,3 +63,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = "users"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["cpf"], condition=~Q(cpf=None), name="unique_cpf_not_null"
+            )
+        ]

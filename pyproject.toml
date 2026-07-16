@@ -5,12 +5,23 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "asgiref>=3.11.1",
     "dj-rest-auth[with-social]>=7.2.0",
     "django>=6.0.2",
     "django-allauth[socialaccount]>=65.15.1",
     "django-environ>=0.13.0",
-    "django-ninja-jwt>=5.4.4",
+    "django-storages[boto3,s3]>=1.14.6",
     "djangorestframework>=3.17.1",
+    "djangorestframework-simplejwt>=5.5.1",
+    "drf-spectacular>=0.29.0",
     "drf-yasg>=1.21.15",
+    "faststream[cli,rabbit]>=0.7.1",
+    "google-auth>=2.56.0",
+    "httpx>=0.28.1",
     "pillow>=12.1.0",
+    "psycopg[binary]>=3.3.4",
+    "validate-docbr>=2.0.0",
 ]
+
+[dependency-groups]
+dev = []

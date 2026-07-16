@@ -4,13 +4,13 @@ RUN pip install --no-cache-dir uv
 
 WORKDIR /app
 
-COPY services/account/pyproject.toml services/account/uv.lock ./
+COPY pyproject.toml uv.lock ./
 
 RUN uv sync --no-editable
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-COPY services/account /app/
+COPY .. /app/
 
 EXPOSE 8000
 

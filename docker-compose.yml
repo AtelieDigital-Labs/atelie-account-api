@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    volumes:
+      - .:/app
+      - /app/.venv
+    ports:
+      - "8001:8000"
+    command:
+      - sh
+      - -c
+      - |
+          uv run python manage.py migrate
+          uv run python manage.py collectstatic --noinput
+          uv run python manage.py runserver 0.0.0.0:8000 --settings config.settings.local
+    networks:
+      - atelie-network
+
+  broker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - .:/app
+      - /app/.venv
+    command: uv run faststream run infra.messaging.broker:app
+    networks:
+      - atelie-network
+
+networks:
+  atelie-network:
+    external: true
