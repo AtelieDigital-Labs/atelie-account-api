@@ -10,8 +10,23 @@ env = environ.Env(DEBUG=(bool, False), ALLOWED_HOSTS=(list, []))
 
 environ.Env.read_env(BASE_DIR / ".env")
 
-SECRET_KEY = env.str("SECRET_KEY")
+ALLOWED_HOSTS=["*"]
 
+SECRET_KEY = env.str("SECRET_KEY")
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+# Permite que o Django entenda o cabeçalho 'X-Forwarded-Proto' enviado pelo Nginx
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Obrigatório a partir do Django 4.0+ para requisições seguras via Proxy
+CSRF_TRUSTED_ORIGINS = [
+    "https://ateliedigital.dev.br",
+]
+
+# 3. Se estiver usando CORS para conectar o React ao Django
+# CORS_ALLOWED_ORIGINS = [
+#     "https://ateliedigital.dev.br",
+# ]
+# CORS_ALLOW_CREDENTIALS = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +56,8 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "storages"
 ]
+
+BACKEND_URL="https://ateliedigital.dev.br"
 
 SITE_ID = 1
 
@@ -111,7 +128,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 RABBITMQ_URL = env.str("RABBITMQ_URL")
 
@@ -167,17 +185,17 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 GOOGLE_CALLBACK_URL = env("GOOGLE_CALLBACK_URL")
 # MinIO 
-# Configuração de Storages para o Django 4.2+
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "config.storages.CustomMinioStorage", # Sua classe customizada
         "OPTIONS": {
             "access_key": "atelie",
             "secret_key": "atelie123",
             "bucket_name": "accounts",
-            "endpoint_url": "http://minio:9000",
-
-            "querystring_auth": True,
+            "endpoint_url": "http://minio:9000", # Volte para o interno!
+            "region_name": "eu-west-1",
+            "use_ssl": False,
+            "querystring_auth": True, # Mantém assinado
             "file_overwrite": False,
             "addressing_style": "path",
             "signature_version": "s3v4",
@@ -188,6 +206,4 @@ STORAGES = {
     },
 }
 
-# Como removemos o custom_domain, você precisa ditar explicitamente o caminho público.
-# O Django usará este endereço HTTP (sem SSL/HTTPS) para gerar os links que o seu React vai ler!
-MEDIA_URL = "http://localhost:9000/accounts/"
+MEDIA_URL = "https://ateliedigital.dev.br/media/"

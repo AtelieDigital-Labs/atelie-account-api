@@ -1,8 +1,13 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.account.adapter import DefaultAccountAdapter
+from django.conf import settings
 from infra.messaging.publishers.user_created import publish_user_created
 from infra.messaging.events.user_created import UserCreatedEvent
 from asgiref.sync import async_to_sync
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MySocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -37,24 +42,45 @@ class AccountAdapter(DefaultAccountAdapter):
         return user
         
     def send_mail(self, template_prefix, email, context):
-        print("SEND_MAIL CHAMADO")
+        print("SEND_MAIL CHAMADO", flush=True)
+        
+        # 1. Print de segurança para ver o que tem dentro do context
+        print(f"DEBUG CONTEXTO COMPLETO: {context}", flush=True)
+        
+        if not context:
+            print("ERRO: O dicionário 'context' veio vazio ou nulo!", flush=True)
+            return
+    
         user = context.get("user")
-
-        event = UserCreatedEvent(
-            user_id=user.id,
-            first_name=user.first_name,
-            email=email,
-            confirmation_key=context.get("key"),
-            confirmation_url=context.get("activate_url"),
-            template_prefix=template_prefix,
-        )
-
-        async_to_sync(publish_user_created)(event)
-
-    # async def _publish(self, event):
-    #     async with broker:
-    #         await broker.publish(
-    #             message=asdict(event),
-    #             exchange=exchange_accounts,
-    #             routing_key=RoutingKey.USER_CREATED_ROUTING_KEY
-    #         )
+        key = context.get("key")
+        
+        print(f"DEBUG - User extraído: {user}", flush=True)
+        print(f"DEBUG - Key extraída: {key}", flush=True)
+    
+        if not user:
+            print("ERRO: Não foi possível obter o 'user' do contexto. O fluxo não pode continuar.", flush=True)
+            return
+    
+        if not key:
+            print("AVISO: A 'key' veio vazia no contexto.", flush=True)
+    
+        # 2. Monta a URL com segurança usando f-string pura
+        confirmation_url = f"{settings.BACKEND_URL}/auth/confirm-email?key={key or ''}"
+        print(f"DEBUG - URL gerada: {confirmation_url}", flush=True)
+    
+        try:
+            event = UserCreatedEvent(
+                user_id=user.id,
+                first_name=user.first_name,
+                email=email,
+                confirmation_key=key or "",
+                confirmation_url=confirmation_url,
+                template_prefix=template_prefix,
+            )
+            
+            print("Tentando publicar evento...", flush=True)
+            async_to_sync(publish_user_created)(event)
+            print("Evento publicado com sucesso!", flush=True)
+            
+        except Exception as e:
+            print(f"ERRO FATAL DURANTE DISPARO DO EVENTO: {str(e)}", flush=True)

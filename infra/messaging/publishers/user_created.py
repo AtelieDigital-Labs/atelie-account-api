@@ -8,6 +8,7 @@ from ..events.user_created import UserCreatedEvent
 async def publish_user_created(event: UserCreatedEvent):
     await broker.start()
     await broker.connect()
+    print("aaaaaaaaaaaaaaaaaaaaaaaaaaa")
     await broker.publish(
         exchange=exchange_accounts,
         routing_key=RoutingKey.USER_CREATED_ROUTING_KEY,
